@@ -5,7 +5,7 @@ using Model;
 using Model.Config;
 using UnityEngine;
 using Utilities;
-//jopa
+//gg
 //hi
 public class EnterPoint : MonoBehaviour
 {
