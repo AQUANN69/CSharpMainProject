@@ -4,7 +4,6 @@ using Model;
 using Model.Runtime.Projectiles;
 using UnityEngine;
 using Utilities;
-using static UnityEditor.PlayerSettings;
 
 namespace UnitBrains.Player
 {
