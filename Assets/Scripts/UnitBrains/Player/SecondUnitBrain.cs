@@ -17,19 +17,18 @@ namespace UnitBrains.Player
         private bool _overheated;
 
         private Vector2Int? _target;
+        private List<Vector2Int> unreachableTargets = new List<Vector2Int>();
 
         protected override void GenerateProjectiles(Vector2Int forTarget, List<BaseProjectile> intoList)
         {
-            float overheatTemperature = OverheatTemperature;
             var projectile = CreateProjectile(forTarget);
             AddProjectileToList(projectile, intoList);
         }
 
         protected override List<Vector2Int> SelectTargets()
         {
-
             List<Vector2Int> result = new List<Vector2Int>();
-            List<Vector2Int> unreachableTargets = new List<Vector2Int>();
+            unreachableTargets.Clear();
 
             var allTargets = GetAllTargets();
 
@@ -69,10 +68,11 @@ namespace UnitBrains.Player
 
         public override Vector2Int GetNextStep()
         {
-            if (unreachableTargets.Count > 0)
+            if (_target.HasValue)
             {
-                var target = unreachableTargets.FirstOrDefault();
-                if (target != Vector2Int.zero && !IsTargetInRange(target))
+                var target = _target.Value;
+
+                if (!IsTargetInRange(target))
                 {
                     return unit.Pos.CalcNextStepTowards(target);
                 }
@@ -80,11 +80,12 @@ namespace UnitBrains.Player
 
             return unit.Pos;
         }
+
         public override void Update(float deltaTime, float time)
         {
             if (_overheated)
             {
-                _cooldownTime += Time.deltaTime;
+                _cooldownTime += deltaTime;
                 float t = _cooldownTime / (OverheatCooldown / 10);
                 _temperature = Mathf.Lerp(OverheatTemperature, 0, t);
                 if (t >= 1)
@@ -95,12 +96,9 @@ namespace UnitBrains.Player
             }
         }
 
-
-        private List<Vector2Int> unreachableTargets = new List<Vector2Int>();
         private int GetTemperature()
         {
-            if (_overheated) return (int)OverheatTemperature;
-            else return (int)_temperature;
+            return _overheated ? (int)OverheatTemperature : (int)_temperature;
         }
 
         private void IncreaseTemperature()
